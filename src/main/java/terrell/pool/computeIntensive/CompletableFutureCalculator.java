@@ -1,16 +1,12 @@
-package terrell.pool.calculate;
+package terrell.pool.computeIntensive;
 /**
  * @author: TerrellChen
  * @version: Created in 下午2:17 15/4/19
  */
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.function.BiFunction;
-import java.util.stream.LongStream;
 
 /**
  * Description:
@@ -32,6 +28,7 @@ public class CompletableFutureCalculator implements Calculator {
 
     @Override
     public long sumUp(long... numbers) {
+        System.out.println("Pool size: " + parallism);
         CompletableFuture<Long> cf = CompletableFuture.completedFuture(0l);
         List<CompletableFuture<Long>> results = new ArrayList<>();
 
@@ -49,7 +46,7 @@ public class CompletableFutureCalculator implements Calculator {
                     total += numbers[j];
                 }
                 return total;
-            }));
+            },pool));
         }
 
         for(CompletableFuture<Long> t: results) {
@@ -57,19 +54,5 @@ public class CompletableFutureCalculator implements Calculator {
         }
 
         return cf.join();
-    }
-
-    public static void main(String[] args) throws Exception {
-        long[] numbers = LongStream.rangeClosed(1, 100000000).toArray();
-
-        Instant start = Instant.now();
-        Calculator calculator = new CompletableFutureCalculator();
-        long result = calculator.sumUp(numbers);
-        Instant end = Instant.now();
-        System.out.println("耗时：" + Duration.between(start, end).toMillis() + "ms");
-
-        System.out.println("结果为：" + result);
-
-        ((CompletableFutureCalculator) calculator).close();
     }
 }

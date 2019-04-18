@@ -1,32 +1,31 @@
-package terrell.pool.calculate;
+package terrell.pool.computeIntensive;
 /**
  * @author: TerrellChen
  * @version: Created in 下午1:34 15/4/19
  */
+
+import terrell.pool.LifeCycle;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.stream.LongStream;
 
 /**
- * Description:
+ * Description: 实时任务 cpu密集型
  */
-public class ForLoopCalculator implements Calculator {
-    @Override
-    public long sumUp(long... numbers) {
-        long total = 0;
-        for (long i:numbers){
-            total += i;
-        }
-        return total;
+public interface Calculator extends LifeCycle {
+    long sumUp(long... numbers) throws Exception;
+
+    default void close(){
+
     }
 
-    public static void main(String[] args) {
+    @Override
+    default void start() throws Exception {
         long[] numbers = LongStream.rangeClosed(1, 100000000).toArray();
 
         Instant start = Instant.now();
-        Calculator calculator = new ForLoopCalculator();
-        long result = calculator.sumUp(numbers);
+        long result = this.sumUp(numbers);
         Instant end = Instant.now();
         System.out.println("耗时：" + Duration.between(start, end).toMillis() + "ms");
 

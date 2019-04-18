@@ -1,18 +1,12 @@
-package terrell.pool.calculate;
+package terrell.pool.computeIntensive;
 /**
  * @author: TerrellChen
  * @version: Created in 下午1:35 15/4/19
  */
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.stream.LongStream;
+import java.util.concurrent.*;
 
 /**
  * Description:
@@ -55,6 +49,7 @@ public class FutureCalculator implements Calculator {
 
     @Override
     public long sumUp(long... numbers) {
+        System.out.println("Pool size: " + parallism);
         List<Future<Long>> results = new ArrayList<>();
 
         // 把任务分解为 n 份，交给 n 个线程处理   4核心 就等分成4份呗
@@ -81,17 +76,4 @@ public class FutureCalculator implements Calculator {
         return total;
     }
 
-    public static void main(String[] args) {
-        long[] numbers = LongStream.rangeClosed(1, 100000000).toArray();
-
-        Instant start = Instant.now();
-        Calculator calculator = new FutureCalculator();
-        long result = calculator.sumUp(numbers);
-        Instant end = Instant.now();
-        System.out.println("耗时：" + Duration.between(start, end).toMillis() + "ms");
-
-        System.out.println("结果为：" + result);
-
-        ((FutureCalculator) calculator).close();
-    }
 }
